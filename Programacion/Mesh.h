@@ -1,4 +1,6 @@
 #pragma once
+#include <GL/glew.h>
+#include <GL/freeglut.h>
 class Mesh {
 private:
 	void SetAttributeData(GLuint& buffer, const GLsizeiptr size, const void* data, GLenum usage, GLuint locationIndex, const GLint components);
@@ -8,6 +10,7 @@ private:
 	GLuint _vertexCount;
 public:
 	Mesh();
+	~Mesh();
 	void CreateMesh(GLint vertexCount);
 	void Draw(GLenum primitive);
 	void SetPositionAttribute(std::vector<glm::vec2> positions, GLenum usage, GLuint locatonIndex);

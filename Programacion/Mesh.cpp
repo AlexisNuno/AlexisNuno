@@ -14,7 +14,13 @@ Mesh::Mesh()
 	_colorsVertexBufferObject = 0;
 	_vertexCount = 0;
 }
-void SetAttributeData(GLuint& buffer, const GLsizeiptr size, const void* data, GLenum usage, GLuint locationIndex, const GLint components);
+Mesh::~Mesh()
+{
+	glDeleteVertexArrays(1, &_vertexArrayObject);
+	glDeleteBuffers(1, &_positionsVertexBufferObject);
+	glDeleteBuffers(1, &_colorsVertexBufferObject);
+	_vertexCount = 0;
+}
 
 
 void Mesh::CreateMesh(GLint vertexcount) {
@@ -31,7 +37,7 @@ void Mesh::Draw(GLenum primitive) {
 }
 
 void Mesh::SetPositionAttribute(std::vector<glm::vec2> positions, GLenum usage, GLuint locationIndex) {
-	
+
 
 	// positions.size() igual a _vertexCount and positions.size() no sea 0
 
@@ -42,24 +48,7 @@ void Mesh::SetPositionAttribute(std::vector<glm::vec2> positions, GLenum usage, 
 			positions.data(), usage, locationIndex, 2);
 	}
 
-/*
-	glGenBuffers(1, &positionsVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, positionsVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * positions.size(),
-		positions.data(), GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	std::vector<glm::vec2> positions;
-	positions.push_back(glm::vec2(-1.0f, -1.0f));
-	positions.push_back(glm::vec2(1.0f, -1.0f));
-	positions.push_back(glm::vec2(0.0f, 1.0f));
-	positions.push_back(glm::vec2(2.0f, 1.0f));*/
-
-
-
-}	
+}
 void Mesh::SetColorAttribute(std::vector<glm::vec3> colors, GLenum usage, GLuint locationIndex) {
 	
 	
@@ -84,4 +73,4 @@ void Mesh::SetAttributeData(GLuint& buffer, const GLsizeiptr size, const void* d
 	glVertexAttribPointer(components, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
+}	

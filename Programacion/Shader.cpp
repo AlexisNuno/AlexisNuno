@@ -1,63 +1,69 @@
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <GL/glew.h>
-#include <GL/freeglut.h>
-#include <glm/glm.hpp>
-#include <vector>
 #include "Shader.h"
+
 #include "InputFile.h"
+#include <iostream>
+#include <vector>
 
 Shader::Shader()
 {
 	_shaderHandle = 0;
-
 }
 
 Shader::~Shader()
 {
 	glDeleteShader(_shaderHandle);
-
 }
-void Shader::createShader(std::string path, GLenum type)
+
+void Shader::CreateShader(std::string path, GLenum type)
 {
-	if (_shaderHandle > 0) {
-		glDeleteShader(_shaderHandle);
-	}
 	InputFile ifile;
-	
-	ifile.Read(path);
-	std::string shaderSource = ifile.GetContents();
-	const GLchar *shaderSource_c = (const GLchar*)shaderSource.c_str();
+	if (!ifile.Read(path)) return;
+	std::string source = ifile.GetContents();
+
+	if (_shaderHandle)
+		glDeleteShader(_shaderHandle);
+
 	_shaderHandle = glCreateShader(type);
-		glShaderSource(_shaderHandle, 1, &shaderSource_c, nullptr);
-		glCompileShader(_shaderHandle);
 
-			GLint vertexShaderCompileSuccess = 0;
-			glGetShaderiv(_shaderHandle, GL_COMPILE_STATUS,
-				&vertexShaderCompileSuccess);
-			if (vertexShaderCompileSuccess == GL_FALSE)
-			{
-				GLint logLength = 0;
-				glGetShaderiv(_shaderHandle, GL_INFO_LOG_LENGTH, &logLength);
-				if (logLength > 0)
-				{
-					std::vector<GLchar> compileLog(logLength);
-					glGetShaderInfoLog(_shaderHandle, logLength, &logLength,
-						&compileLog[0]);
+	const GLchar *source_c = (const GLchar*)source.c_str();
+	glShaderSource(_shaderHandle, 1, &source_c, nullptr);
 
-					for (int i = 0; i < logLength; i++)
-					{
-						std::cout << compileLog[i];
-					}
-					std::cout << std::endl;
-				}
-			std::cout << "Shader Default.vert did not compiled." << std::endl;
+	glCompileShader(_shaderHandle);
+
+	// Get compile status
+	GLint shaderCompileSuccess = 0;
+	glGetShaderiv(_shaderHandle, GL_COMPILE_STATUS, &shaderCompileSuccess);
+	if (shaderCompileSuccess == GL_FALSE)
+	{
+		// Get compile log length
+		GLint logLength = 0;
+		glGetShaderiv(_shaderHandle, GL_INFO_LOG_LENGTH, &logLength);
+		if (logLength > 0)
+		{
+
+			// Allocate memory for compile log
+			std::vector<GLchar> compileLog(logLength);
+
+			// Get compile log
+			glGetShaderInfoLog(_shaderHandle, logLength, &logLength, &compileLog[0]);
+
+			// Print compile log
+			for (int i = 0; i<logLength; i++)
+				std::cout << compileLog[i];
+			std::cout << std::endl;
 		}
+		std::cout << "Shader " << path << " did not compiled." << std::endl;
+
+		//We don't need the shader anymore.
+		glDeleteShader(_shaderHandle);
+
+		return;
+	}
+
+	std::cout << "Shader " << path << " compiled successfully" << std::endl;
 }
 
-
-	GLuint Shader::getHandle(){
-
+GLuint Shader::GetHandle()
+{
 	return _shaderHandle;
-	};
+}

@@ -2,17 +2,18 @@
 
 #include <GL/glew.h>
 #include <GL/freeglut.h>
+#include <string>
 
-class Shader 
+class Shader
 {
 public:
 	Shader();
 	~Shader();
-	void createShader(std::string path, GLenum type);
-	GLuint getHandle();
+
+	void CreateShader(std::string path, GLenum type);
+
+	GLuint GetHandle();
 
 private:
-	
 	GLuint _shaderHandle;
-	
 };
